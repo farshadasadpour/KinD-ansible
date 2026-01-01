@@ -47,10 +47,11 @@ you need to create 4 files to run this role properly.
 
  - inventory.yml
 
->      all:    hosts:
->       node1:
->         ansible_host: <YOUR REMOTE SERVER IP ADDRESS>
->         ansible_user: <YOUR REMOTE SERVER USER>
+>      kind:    
+>        hosts:
+>           node1:
+>               ansible_host: <YOUR REMOTE SERVER IP ADDRESS>
+>               ansible_user: <YOUR REMOTE SERVER USER>
 
 now you can install the role with following command
 ```
