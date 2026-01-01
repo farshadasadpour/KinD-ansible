@@ -1,0 +1,13 @@
+#SPDX-License-Identifier: MIT-0
+galaxy_info:
+  author: Navid Farahmand
+  description: Create a simple KinD for development and testing purposes.
+  license: MIT
+  platforms:
+    - name: ubuntu
+      versions: ["noble"]
+  min_ansible_version: 2.2
+
+  galaxy_tags: []
+
+dependencies: []

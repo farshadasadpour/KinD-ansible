@@ -1,0 +1,15 @@
+#SPDX-License-Identifier: MIT-0
+---
+# vars file for kind
+docker:
+  group: "docker"
+KinD:
+  version: "v0.31.0"
+  name: "test-kind"
+  config_location: "/etc/kind_cluster.yml"
+  config: |
+    kind: Cluster
+    apiVersion: kind.x-k8s.io/v1alpha4
+    nodes:
+      - role: control-plane
+      - role: worker

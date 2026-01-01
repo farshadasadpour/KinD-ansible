@@ -1,0 +1,73 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: Update repository cache
+  ansible.builtin.apt:
+    name:
+      - docker.io
+      - bash-completion
+    update_cache: yes
+
+- name: Ensure docker group({{ docker.group }}) exists
+  ansible.builtin.group:
+    name: "{{ docker.group }}"
+    state: present
+
+- name: Add the user {{ ansible_user }} to docker group ({{ docker.group }})
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    comment: add user for sudo less docker 
+    group: "{{ docker.group }}"
+
+- name: Download kubectl binary version
+  ansible.builtin.uri:
+    url: "https://dl.k8s.io/release/stable.txt"
+    return_content: yes
+  register: _kubectl_version
+
+- name: Download kubectl binary
+  ansible.builtin.get_url:
+    url: "https://dl.k8s.io/release/{{_kubectl_version.content }}/bin/linux/{{ arch[ ansible_facts['architecture']] }}/kubectl"
+    dest: /usr/local/bin/kubectl
+    checksum: "sha256:https://dl.k8s.io/release/{{_kubectl_version.content }}/bin/linux/{{ arch[ ansible_facts['architecture']] }}/kubectl.sha256" 
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Download KinD binary 
+  ansible.builtin.get_url:
+    url: "https://kind.sigs.k8s.io/dl/{{ KinD.version }}/kind-linux-{{arch[ansible_facts['architecture']]}}"
+    dest: /usr/local/bin/kind
+    mode: '0550'
+
+- name: Install autocompletion
+  ansible.builtin.lineinfile:
+    path: /etc/profile
+    line: "source /usr/share/bash-completion/bash_completion"
+
+- name: Run Kubectl autocompletion command
+  ansible.builtin.command: "kubectl completion bash"
+  register: _kubectl_completetion
+
+- name: Create kubectl autocompletion file
+  ansible.builtin.copy:
+    content: "{{ _kubectl_completetion.stdout }}"
+    dest: "/etc/bash_completion.d/kubectl"
+    mode: '0644'
+
+- name: Create KinD config file
+  ansible.builtin.copy:
+    content: "{{ KinD.config }}"
+    dest: "{{ KinD.config_location }}"
+
+- name: Create KinD Cluster
+  ansible.builtin.shell: "kind create cluster --name {{ KinD.name }} --config {{ KinD.config_location }}"
+
+- name: move kube config file to user 
+  ansible.builtin.copy:
+    remote_src: true
+    src: "/root/.kube/config"
+    dest: "/home/{{ ansible_user}}/.kube/"
+    owner: "{{ ansible_user }}"
+    mode: '0600'
+  tags:
+    - sudoless

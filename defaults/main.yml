@@ -1,0 +1,7 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for kind
+#
+arch:
+  x86_64: "amd64"
+  aarch64: "arm64"

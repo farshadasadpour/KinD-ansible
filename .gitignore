@@ -1,0 +1,6 @@
+.vscode/
+.idea/
+*.retry
+*.log
+.molecule/
+__pycache__/
