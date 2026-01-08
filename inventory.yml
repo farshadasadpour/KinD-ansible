@@ -1,5 +1,5 @@
 kind:
   hosts:
     node1:
-      ansible_host: <YOUR REMOTE SERVER IP ADDRESS>
-      ansible_user: <YOUR REMOTE SERVER USER>
+      ansible_host: <IP>
+      ansible_user: <USER>
